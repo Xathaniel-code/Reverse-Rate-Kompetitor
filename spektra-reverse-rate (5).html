@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SPEKTRA · Reverse Rate</title>
+<style>
+/* ─── TOKENS ─── */
+:root {
+  --bg:        #F0F3F8;
+  --surface:   #FFFFFF;
+  --surface2:  #F7F9FC;
+  --border:    #E2E8F0;
+  --brand:     #0057B8;
+  --brand-dk:  #003F8A;
+  --brand-lt:  #E8F0FC;
+  --accent:    #00B894;
+  --accent-lt: #E0F8F3;
+  --warn:      #E67E22;
+  --warn-lt:   #FEF3E2;
+  --danger:    #E53E3E;
+  --danger-lt: #FEE2E2;
+  --txt:       #1A202C;
+  --txt2:      #4A5568;
+  --txt3:      #A0AEC0;
+  --radius:    14px;
+  --radius-sm: 10px;
+  --shadow:    0 2px 12px rgba(0,87,184,.10);
+}
+[data-dark] {
+  --bg:       #0D1117;
+  --surface:  #161B27;
+  --surface2: #1E2535;
+  --border:   #2D3748;
+  --brand-lt: #0D2040;
+  --accent-lt:#0B2820;
+  --warn-lt:  #2D1B0A;
+  --danger-lt:#2D1010;
+  --txt:      #EDF2F7;
+  --txt2:     #A0AEC0;
+  --txt3:     #4A5568;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* ─── HEADER ─── */
+.hdr {
+  background: var(--brand);
+  color: #fff;
+  padding: 14px 18px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0,0,0,.2);
+}
+.hdr-left .logo { font-size: 17px; font-weight: 900; letter-spacing: -.3px; }
+.hdr-left .logo span { color: #7EC8F8; }
+.hdr-left .sub { font-size: 11px; opacity: .7; margin-top: 1px; }
+.hdr-right { display: flex; gap: 8px; }
+.ico-btn {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,.15);
+  border: none; border-radius: 10px;
+  color: #fff; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.ico-btn:active { background: rgba(255,255,255,.3); }
+
+/* ─── MAIN ─── */
+.main { padding: 16px 14px 32px; max-width: 480px; margin: 0 auto; }
+
+/* ─── CARD ─── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.card-hd {
+  padding: 13px 16px 11px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .2px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface2);
+}
+.card-bd { padding: 16px; }
+
+/* ─── FORM ─── */
+.fgroup { margin-bottom: 14px; }
+.fgroup:last-child { margin-bottom: 0; }
+
+label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--txt2);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 5px;
+}
+
+input[type=text], input[type=number], select {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--txt);
+  font-size: 16px;
+  font-weight: 600;
+  transition: border-color .15s, box-shadow .15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(0,87,184,.12);
+}
+input.has-val { border-color: var(--brand); }
+input.err { border-color: var(--danger) !important; }
+
+.prefix-wrap { position: relative; }
+.prefix-wrap .pfx {
+  position: absolute;
+  left: 14px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--txt3);
+  pointer-events: none;
+}
+.prefix-wrap input { padding-left: 36px; }
+
+.errtxt {
+  font-size: 11.5px;
+  color: var(--danger);
+  margin-top: 4px;
+  display: none;
+}
+.errtxt.show { display: block; }
+
+/* ─── TOGGLE PILL ─── */
+.pill-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+}
+.pill-btn {
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--txt2);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .18s;
+  line-height: 1.3;
+}
+.pill-btn small { font-weight: 400; font-size: 11px; display: block; }
+.pill-btn.on {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,87,184,.3);
+}
+
+/* ─── WAR INPUT ─── */
+.war-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ─── CTA ─── */
+.cta {
+  width: 100%;
+  height: 54px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 18px rgba(0,87,184,.35);
+  margin-bottom: 14px;
+  transition: background .15s, transform .1s;
+}
+.cta:active { background: var(--brand-dk); transform: scale(.98); }
+
+.btn-reset {
+  width: 100%;
+  height: 44px;
+  background: none;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--txt2);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+.btn-reset:active { background: var(--surface2); }
+
+/* ─── RESULTS ─── */
+.results { display: none; }
+.results.show { display: block; }
+
+/* hero card */
+.hero-card {
+  background: linear-gradient(135deg, var(--brand) 0%, #002F6C 100%);
+  border-radius: var(--radius);
+  padding: 20px 18px;
+  margin-bottom: 14px;
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(0,87,184,.35);
+}
+.hero-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  opacity: .7;
+  margin-bottom: 4px;
+}
+.hero-rate {
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.hero-rate sup { font-size: 24px; font-weight: 700; letter-spacing: 0; vertical-align: top; margin-top: 8px; }
+.hero-sub { font-size: 12.5px; opacity: .65; margin-top: 6px; }
+.hero-divider { height: 1px; background: rgba(255,255,255,.15); margin: 14px 0; }
+.hero-row { display: flex; justify-content: space-between; }
+.hero-item { }
+.hero-item .lbl { font-size: 10.5px; opacity: .65; text-transform: uppercase; letter-spacing: .5px; }
+.hero-item .val { font-size: 17px; font-weight: 800; }
+
+/* result tiles */
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 13px;
+  box-shadow: var(--shadow);
+}
+.tile .t-lbl {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--txt3);
+  margin-bottom: 4px;
+}
+.tile .t-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--txt);
+}
+.tile .t-val.orange { color: var(--warn); }
+.tile .t-val.green  { color: var(--accent); }
+.tile .t-val.blue   { color: var(--brand); }
+
+/* comparison section */
+.section-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--txt3);
+  margin-bottom: 10px;
+}
+
+.compare-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+.cmp-row {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.cmp-row:last-child { border-bottom: none; }
+.cmp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.cmp-name {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.badge-warn { background: var(--warn-lt); color: var(--warn); }
+.badge-blue { background: var(--brand-lt); color: var(--brand); }
+.badge-green{ background: var(--accent-lt); color: var(--accent); }
+
+.cmp-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+.cmp-val-item .cv-lbl {
+  font-size: 10px;
+  color: var(--txt3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.cmp-val-item .cv-val {
+  font-size: 14px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+/* verdict */
+.verdict {
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.verdict.cheaper { background: var(--accent-lt); border-left: 4px solid var(--accent); }
+.verdict.pricier { background: var(--warn-lt);   border-left: 4px solid var(--warn); }
+.verdict.same    { background: var(--brand-lt);  border-left: 4px solid var(--brand); }
+.verdict b { font-weight: 800; }
+
+/* amort */
+.amort-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.amort-table {
+  width: 100%;
+  min-width: 360px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.amort-table thead th {
+  background: var(--brand);
+  color: #fff;
+  padding: 8px 9px;
+  text-align: right;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+.amort-table thead th:first-child { text-align: left; }
+.amort-table tbody tr:nth-child(even) { background: var(--surface2); }
+.amort-table tbody td {
+  padding: 7px 9px;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.amort-table tbody td:first-child {
+  text-align: left;
+  font-weight: 700;
+  color: var(--txt2);
+}
+.amort-table tfoot td {
+  padding: 8px 9px;
+  background: var(--brand-lt);
+  font-weight: 800;
+  font-size: 12px;
+  color: var(--brand);
+  border-top: 2px solid var(--brand);
+  text-align: right;
+}
+.amort-table tfoot td:first-child { text-align: left; }
+
+/* action row */
+.act-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+.act-btn {
+  height: 44px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--txt2);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.act-btn:active { background: var(--surface2); }
+.act-btn.green-btn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ver tag */
+.ver { text-align: center; font-size: 10.5px; color: var(--txt3); margin-top: 20px; }
+
+/* toast */
+.toast {
+  position: fixed;
+  bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: #1A202C;
+  color: #fff;
+  padding: 11px 22px;
+  border-radius: 30px;
+  font-size: 13.5px;
+  font-weight: 600;
+  z-index: 999;
+  opacity: 0;
+  transition: all .25s;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 18px rgba(0,0,0,.3);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media print {
+  .no-print { display: none !important; }
+  .hero-card { background: #0057B8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr no-print">
+  <div class="hdr-left">
+    <div class="logo">SPEKTRA <span>Finance</span></div>
+    <div class="sub">Reverse Rate Kompetitor</div>
+  </div>
+  <div class="hdr-right">
+    <button class="ico-btn" onclick="toggleDark()" title="Dark Mode">🌙</button>
+    <button class="ico-btn" onclick="window.print()" title="Print">🖨</button>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- ─── INPUT CARD ─── -->
+  <div class="card no-print">
+    <div class="card-hd">🔍 Data Kompetitor</div>
+    <div class="card-bd">
+
+      <div class="fgroup">
+        <label>Harga Barang (OTR)</label>
+        <div class="prefix-wrap">
+          <span class="pfx">Rp</span>
+          <input type="text" id="f_otr" inputmode="numeric" placeholder="0" autocomplete="off">
+        </div>
+        <div class="errtxt" id="e_otr">Masukkan harga barang</div>
+      </div>
+
+      <div class="fgroup">
+        <label>Admin / Biaya Lain <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--txt3)">— opsional (jika diketahui)</span></label>
+        <div class="prefix-wrap">
+          <span class="pfx">Rp</span>
+          <input type="text" id="f_admin" inputmode="numeric" placeholder="0" autocomplete="off">
+        </div>
+        <div style="font-size:11px;color:var(--txt3);margin-top:4px;line-height:1.5">
+          Admin ikut difinance oleh kompetitor → masuk ke Principle. Jika tidak tahu, kosongkan (0).
+        </div>
+      </div>
+
+      <div class="fgroup">
+        <label>Angsuran Kompetitor / Bulan</label>
+        <div class="prefix-wrap">
+          <span class="pfx">Rp</span>
+          <input type="text" id="f_ang" inputmode="numeric" placeholder="0" autocomplete="off">
+        </div>
+        <div class="errtxt" id="e_ang">Masukkan angsuran kompetitor</div>
+      </div>
+
+      <div class="fgroup">
+        <label>Tenor (Bulan)</label>
+        <input type="number" id="f_top" inputmode="numeric" placeholder="cth: 12" min="1" max="240" autocomplete="off">
+        <div class="errtxt" id="e_top">Masukkan tenor yang valid</div>
+      </div>
+
+      <div class="fgroup">
+        <label>Tipe Angsuran</label>
+        <div class="pill-group">
+          <button class="pill-btn on" id="btn_ar" onclick="setType('AR')">
+            Arrear
+            <small>Tanpa DP angsuran</small>
+          </button>
+          <button class="pill-btn" id="btn_ad" onclick="setType('AD')">
+            Advance
+            <small>Bayar 1 angsuran dp</small>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── WAR SPEKTRA CARD ─── -->
+  <div class="card no-print">
+    <div class="card-hd">⚙️ Pembanding SPEKTRA</div>
+    <div class="card-bd">
+      <p style="font-size:12.5px;color:var(--txt2);margin-bottom:14px;line-height:1.6">
+        Masukkan WAR Effective Rate SPEKTRA — Flat Rate akan otomatis dihitung menggunakan rumus konversi SPEKTRA.
+      </p>
+
+      <div class="fgroup">
+        <label>WAR Effective Rate / Tahun</label>
+        <div class="prefix-wrap">
+          <span class="pfx" style="left:auto;right:14px;font-size:13px">%</span>
+          <input type="text" id="f_war_eff" inputmode="decimal"
+            placeholder="cth: 18.5"
+            style="padding-right:32px;padding-left:14px"
+            autocomplete="off" oninput="autoCalcFlat()">
+        </div>
+      </div>
+
+      <!-- Flat Rate auto-computed, read-only -->
+      <div class="fgroup">
+        <label>WAR Flat Rate / Tahun <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--accent)">● otomatis dari Eff Rate</span></label>
+        <div class="prefix-wrap">
+          <span class="pfx" style="left:auto;right:14px;font-size:13px">%</span>
+          <input type="text" id="f_war_flat" readonly
+            placeholder="—"
+            style="padding-right:32px;padding-left:14px;background:var(--surface2);color:var(--txt2);cursor:default">
+        </div>
+      </div>
+
+      <!-- MS207 optional -->
+      <div style="margin-top:4px;border-top:1px dashed var(--border);padding-top:14px">
+        <label style="margin-bottom:6px">
+          MS207 / Splitting Rate
+          <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--txt3)"> — opsional</span>
+        </label>
+        <div class="prefix-wrap">
+          <span class="pfx">Rp</span>
+          <input type="text" id="f_ms207" inputmode="numeric"
+            placeholder="0 (kosongkan jika tidak ada)"
+            autocomplete="off">
+        </div>
+        <div style="font-size:11.5px;color:var(--txt3);margin-top:5px;line-height:1.5">
+          Splitting rate yang memotong bunga murni SPEKTRA. Jika diisi, Interest Murni = Interest Total − MS207.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── CTA ─── -->
+  <button class="cta no-print" onclick="calculate()">
+    ⚡ Hitung Sekarang
+  </button>
+  <button class="btn-reset no-print" onclick="resetAll()">🔄 Reset</button>
+
+  <!-- ─── RESULTS ─── -->
+  <div class="results" id="results">
+
+    <!-- HERO -->
+    <div class="hero-card">
+      <div class="hero-label">Effective Rate Kompetitor (per tahun)</div>
+      <div class="hero-rate"><sup>%</sup><span id="r_eff">–</span></div>
+      <div class="hero-sub" id="r_eff_sub">–</div>
+      <div class="hero-divider"></div>
+      <div class="hero-row">
+        <div class="hero-item">
+          <div class="lbl">Flat Rate / Thn</div>
+          <div class="val" id="r_flat">–%</div>
+        </div>
+        <div class="hero-item" style="text-align:right">
+          <div class="lbl">Total Bunga</div>
+          <div class="val" id="r_tbunga">Rp –</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO TILES -->
+    <div class="tiles" id="r_tiles"></div>
+
+    <!-- COMPARISON -->
+    <div id="compare_wrap" style="display:none">
+      <div class="section-title">📊 Kompetitor vs SPEKTRA</div>
+
+      <div class="compare-block" id="compare_block"></div>
+
+      <div class="verdict" id="verdict"></div>
+    </div>
+
+    <!-- AMORT -->
+    <div class="card">
+      <div class="card-hd">📋 Tabel Amortisasi Kompetitor</div>
+      <div class="card-bd" style="padding:0">
+        <div class="amort-wrap" style="max-height:300px;overflow-y:auto">
+          <table class="amort-table">
+            <thead><tr>
+              <th>Bln</th>
+              <th>Saldo Awal</th>
+              <th>Angsuran</th>
+              <th>Bunga</th>
+              <th>Pokok</th>
+              <th>Sisa</th>
+            </tr></thead>
+            <tbody id="amort_body"></tbody>
+            <tfoot id="amort_foot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="act-row no-print">
+      <button class="act-btn green-btn" onclick="copyResult()">📋 Copy</button>
+      <button class="act-btn" onclick="exportCSV()">📥 CSV</button>
+    </div>
+
+  </div>
+
+  <div class="ver">v1.5.0 · SPEKTRA Finance · Jun 2025</div>
+
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────
+let TYPE = 'AR'; // AR = Arrear | AD = Advance
+let LAST = null;
+
+// ─────────────────────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────────────────────
+function raw(id) {
+  // Format ID: titik = pemisah ribuan, koma = desimal
+  // Contoh: "12.000.000" → strip titik → "12000000" → 12000000
+  const s = document.getElementById(id).value;
+  const stripped = s.replace(/\./g, '').replace(/,/g, '.').replace(/[^0-9.]/g, '');
+  return parseFloat(stripped) || 0;
+}
+
+function fmtN(n, dec = 0) {
+  return n.toLocaleString('id-ID', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+
+function fmtRp(n) { return 'Rp ' + fmtN(Math.round(n)); }
+function fmtPct(n, d = 2) { return fmtN(n * 100, d) + '%'; }
+
+function toast(msg, dur = 2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+// ─────────────────────────────────────────────────────────────
+// FORMAT INPUT (currency mask — tidak hapus angka yg diketik)
+// ─────────────────────────────────────────────────────────────
+function bindCur(id) {
+  const el = document.getElementById(id);
+  el.addEventListener('input', function() {
+    // simpan posisi kursor
+    const sel = this.selectionStart;
+    const oldLen = this.value.length;
+    // ambil digit only
+    const digits = this.value.replace(/[^0-9]/g, '');
+    if (digits === '') { this.value = ''; return; }
+    const num = parseInt(digits, 10);
+    const formatted = num.toLocaleString('id-ID');
+    this.value = formatted;
+    // perbaiki posisi kursor
+    const newLen = this.value.length;
+    const diff = newLen - oldLen;
+    this.setSelectionRange(sel + diff, sel + diff);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  bindCur('f_otr');
+  bindCur('f_ang');
+  bindCur('f_admin');
+  bindCur('f_ms207');
+  document.getElementById('f_top').addEventListener('input', autoCalcFlat);
+});
+
+// ─────────────────────────────────────────────────────────────
+// AUTO CONVERT EFF → FLAT (rumus eksak SPEKTRA dari Excel)
+// Formula Excel H25: =((n × r/12) / (1-(1+r/12)^-n) - 1) × (12/n)
+// di mana r = eff rate per tahun, n = jumlah bulan bayar
+// Flat ini adalah flat rate per tahun
+// ─────────────────────────────────────────────────────────────
+function effToFlat(effAnnual, n) {
+  if (!effAnnual || !n || n < 1) return null;
+  const r = effAnnual;       // eff rate per tahun
+  const rm = r / 12;         // eff rate per bulan
+  // Flat = ((n × rm) / (1-(1+rm)^-n) - 1) × (12/n)
+  const annuityFactor = (n * rm) / (1 - Math.pow(1 + rm, -n));
+  const flat = (annuityFactor - 1) * (12 / n);
+  return flat;
+}
+
+function autoCalcFlat() {
+  const effStr = document.getElementById('f_war_eff').value.trim().replace(',', '.');
+  const eff = parseFloat(effStr) / 100;
+  const top = parseInt(document.getElementById('f_top').value) || 12; // pakai tenor yg diinput, default 12
+  if (!eff || eff <= 0) {
+    document.getElementById('f_war_flat').value = '';
+    return;
+  }
+  const flat = effToFlat(eff, top);
+  if (flat !== null && flat > 0) {
+    document.getElementById('f_war_flat').value = fmtN(flat * 100, 2) + '%';
+  } else {
+    document.getElementById('f_war_flat').value = '';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// UI
+// ─────────────────────────────────────────────────────────────
+function setType(t) {
+  TYPE = t;
+  document.getElementById('btn_ar').classList.toggle('on', t === 'AR');
+  document.getElementById('btn_ad').classList.toggle('on', t === 'AD');
+}
+
+function toggleDark() {
+  document.body.toggleAttribute('data-dark');
+}
+
+// ─────────────────────────────────────────────────────────────
+// VALIDATION
+// ─────────────────────────────────────────────────────────────
+function validate() {
+  let ok = true;
+  ['e_otr','e_ang','e_top'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+  ['f_otr','f_ang','f_top'].forEach(id => {
+    document.getElementById(id).classList.remove('err');
+  });
+
+  const otr = raw('f_otr');
+  const ang = raw('f_ang');
+  const top = parseInt(document.getElementById('f_top').value) || 0;
+
+  if (!otr) { err('f_otr','e_otr'); ok = false; }
+  if (!ang) { err('f_ang','e_ang'); ok = false; }
+  if (!top || top < 1) { err('f_top','e_top'); ok = false; }
+  return ok;
+}
+
+function err(inputId, errId) {
+  document.getElementById(inputId).classList.add('err');
+  document.getElementById(errId).classList.add('show');
+}
+
+// ─────────────────────────────────────────────────────────────
+// CORE ENGINE — SPEKTRA pakai NOMINAL ANNUAL RATE (r_monthly × 12)
+// BUKAN effective annual (1+r)^12 - 1
+// Semua "Effective Rate" di SPEKTRA = r_monthly × 12
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Solve r_monthly dari PV dan PMT menggunakan bisection (robust).
+ * AR: PV = PMT × (1-(1+r)^-n) / r
+ * AD: PV = PMT + PMT × (1-(1+r)^-(n-1)) / r  = PMT × (1 + (1-(1+r)^-(n-1))/r)
+ * Return: r per bulan
+ */
+function solveRate(pv, pmt, n, isAD) {
+  function npv(r) {
+    if (Math.abs(r) < 1e-12) return pmt * n - pv;
+    if (isAD) {
+      // 1 bayar di muka (t=0), lalu n-1 bayar
+      return pmt * (1 + (1 - Math.pow(1+r, -(n-1))) / r) - pv;
+    } else {
+      return pmt * (1 - Math.pow(1+r, -n)) / r - pv;
+    }
+  }
+
+  // Bisection — paling robust untuk range lebar
+  let lo = 1e-10, hi = 3.0; // 0% sampai 300% per bulan
+  if (npv(lo) * npv(hi) > 0) {
+    hi = 50;
+    if (npv(lo) * npv(hi) > 0) return null;
+  }
+  for (let i = 0; i < 400; i++) {
+    const mid = (lo + hi) / 2;
+    if (Math.abs(npv(mid)) < 0.001) return mid;
+    if (npv(lo) * npv(mid) < 0) hi = mid; else lo = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+/**
+ * Hitung angsuran dari WAR Effective Rate (nominal annual).
+ * r_monthly = warEff / 12
+ * AR: PMT = PV × rm / (1-(1+rm)^-n)
+ * AD: PMT = PV / (1 + (1-(1+rm)^-(n-1))/rm)
+ */
+function calcPMT_eff(pv, warEffNominal, n, isAD) {
+  const rm = warEffNominal / 12;
+  if (Math.abs(rm) < 1e-12) return pv / n;
+  if (isAD) {
+    const factor = 1 + (1 - Math.pow(1+rm, -(n-1))) / rm;
+    return pv / factor;
+  } else {
+    return pv * rm / (1 - Math.pow(1+rm, -n));
+  }
+}
+
+/**
+ * Hitung angsuran dari flat rate (rumus SPEKTRA).
+ * Interest = PV × flatAnnual × (n/12)
+ * PMT = (PV + Interest) / n    [sebelum CEILING]
+ * SPEKTRA pakai CEILING(..., 1000) untuk pembulatan ke atas per seribu
+ */
+function calcPMT_flat(pv, flatAnnual, n) {
+  const interest = pv * flatAnnual * (n / 12);
+  const pmtRaw = (pv + interest) / n;
+  return Math.ceil(pmtRaw / 1000) * 1000; // CEILING ke ribuan seperti SPEKTRA
+}
+
+/**
+ * Konversi WAR Eff nominal → Flat Rate (rumus Excel H25 SPEKTRA):
+ * Flat = ((n × rm) / (1-(1+rm)^-n) - 1) × (12/n)
+ * dimana rm = warEff / 12  (nominal monthly)
+ */
+function effToFlat(warEffNominal, n) {
+  if (!warEffNominal || !n || n < 1) return null;
+  const rm = warEffNominal / 12;
+  if (Math.abs(rm) < 1e-12) return 0;
+  const flat = ((n * rm) / (1 - Math.pow(1+rm, -n)) - 1) * (12 / n);
+  return flat;
+}
+
+/**
+ * Build amortisasi dari PV + PMT + r_monthly (nominal → monthly = warEff/12).
+ */
+function buildAmort(pv, pmt, rMonthly, n, isAD) {
+  const rows = [];
+  let balance = pv;
+
+  if (isAD) {
+    rows.push({ bln: 0, bgnBal: balance, ang: pmt, bunga: 0, pokok: pmt, endBal: balance - pmt });
+    balance -= pmt;
+    for (let t = 1; t < n; t++) {
+      const bunga = balance * rMonthly;
+      const pokok = pmt - bunga;
+      balance = Math.max(0, balance - pokok);
+      rows.push({ bln: t, bgnBal: balance + pokok, ang: pmt, bunga, pokok, endBal: balance });
+    }
+  } else {
+    for (let t = 1; t <= n; t++) {
+      const bunga = balance * rMonthly;
+      const pokok = pmt - bunga;
+      const endBal = Math.max(0, balance - pokok);
+      rows.push({ bln: t, bgnBal: balance, ang: pmt, bunga, pokok, endBal });
+      balance = endBal;
+    }
+  }
+  return rows;
+}
+
+// ─────────────────────────────────────────────────────────────
+// CALCULATE
+// ─────────────────────────────────────────────────────────────
+function calculate() {
+  if (!validate()) return;
+
+  const otr   = raw('f_otr');
+  const admin = raw('f_admin'); // biaya admin kompetitor (opsional, ikut difinance)
+  const ang   = raw('f_ang');
+  const top   = parseInt(document.getElementById('f_top').value);
+  const isAD  = TYPE === 'AD';
+
+  // WAR Eff (nominal annual)
+  const warEffStr = document.getElementById('f_war_eff').value.trim().replace(',', '.');
+  const warEff = parseFloat(warEffStr) / 100 || null;
+
+  // WAR Flat: auto dari konversi (rumus SPEKTRA eksak)
+  const warFlat = warEff ? effToFlat(warEff, top) : null;
+
+  // MS207 Splitting Rate (opsional, Rp) — memotong Interest Murni
+  const ms207 = raw('f_ms207');
+
+  // PRINCIPLE = OTR + Admin (admin ikut difinance, seperti SPEKTRA)
+  // Tanpa DP karena kompetitor tidak kita tahu detail DPnya
+  const pv = otr + admin;
+
+  // ── Hitung rate kompetitor ──
+  const rMonthly = solveRate(pv, ang, top, isAD);
+  if (rMonthly === null || rMonthly < 0) {
+    toast('⚠️ Angsuran terlalu rendah untuk OTR/tenor ini. Cek kembali input.');
+    return;
+  }
+
+  // SPEKTRA Effective Rate = r_monthly × 12 (NOMINAL annual, bukan compound)
+  const effNominal = rMonthly * 12;
+
+  // Flat Rate kompetitor: (TotalBunga / PV) × (12/TOP)
+  // TotalBunga dihitung dari amortisasi
+  const amortRows  = buildAmort(pv, ang, rMonthly, top, isAD);
+  const totalAng   = amortRows.reduce((s, x) => s + x.ang, 0);
+  const totalBunga = amortRows.reduce((s, x) => s + x.bunga, 0);
+  const flatAnnual = (totalBunga / pv) / (top / 12);
+
+  // ── Hitung angsuran SPEKTRA jika WAR diisi ──
+  let spkEff = null, spkFlat = null;
+
+  if (warEff !== null) {
+    const pmtSpk    = calcPMT_eff(pv, warEff, top, isAD);
+    const rSpk      = warEff / 12;
+    const amSpk     = buildAmort(pv, pmtSpk, rSpk, top, isAD);
+    const totAng    = amSpk.reduce((s, x) => s + x.ang, 0);
+    const totBunga  = amSpk.reduce((s, x) => s + x.bunga, 0);
+    const totMurni  = totBunga - ms207;
+    spkEff = { pmt: pmtSpk, totalAng: totAng, totalBunga: totBunga,
+               totalBungaMurni: totMurni, ms207, warEff, warFlat: warFlat || 0 };
+  }
+
+  if (warFlat !== null) {
+    const pmtSpkFlat    = calcPMT_flat(pv, warFlat, top);
+    const totBungaFlat  = pv * warFlat * (top / 12);
+    const totMurniFlat  = totBungaFlat - ms207;
+    spkFlat = { pmt: pmtSpkFlat, totalAng: pmtSpkFlat * top,
+                totalBunga: totBungaFlat, totalBungaMurni: totMurniFlat,
+                ms207, warFlat };
+  }
+
+  LAST = { otr, admin, ang, top, isAD, pv, rMonthly, effNominal, flatAnnual,
+           totalAng, totalBunga, amortRows, spkEff, spkFlat, ms207 };
+
+  renderResult(LAST);
+}
+
+// ─────────────────────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────────────────────
+function renderResult(d) {
+  // Show results
+  document.getElementById('results').classList.add('show');
+
+  // Hero
+  document.getElementById('r_eff').textContent = fmtN(d.effNominal * 100, 2);
+  document.getElementById('r_eff_sub').textContent =
+    `Rate per bulan: ${fmtN(d.rMonthly * 100, 4)}%  ·  Tipe: ${d.isAD ? 'Advance' : 'Arrear'}`;
+  document.getElementById('r_flat').textContent = fmtN(d.flatAnnual * 100, 2) + '%';
+  document.getElementById('r_tbunga').textContent = fmtRp(d.totalBunga);
+
+  // Tiles
+  const tileData = [
+    { l: 'Harga Barang (OTR)', v: fmtRp(d.otr) },
+    { l: 'Principle (OTR+Admin)', v: fmtRp(d.pv) },
+    { l: 'Angsuran/Bln', v: fmtRp(d.ang) },
+    { l: 'Tenor', v: d.top + ' bulan' },
+    { l: 'Total Kewajiban', v: fmtRp(d.totalAng) },
+    { l: 'Total Bunga', v: fmtRp(d.totalBunga) },
+  ];
+  document.getElementById('r_tiles').innerHTML = tileData
+    .map(x => `<div class="tile"><div class="t-lbl">${x.l}</div><div class="t-val">${x.v}</div></div>`)
+    .join('');
+
+  // Comparison
+  const hasCompare = d.spkEff || d.spkFlat;
+  document.getElementById('compare_wrap').style.display = hasCompare ? '' : 'none';
+
+  if (hasCompare) {
+    let html = '';
+
+    // ── Row: Kompetitor ──
+    // Flat rate kompetitor → hitung angsuran flat kompetitor (untuk perbandingan apple-to-apple)
+    const kompFlatPmt = calcPMT_flat(d.pv, d.flatAnnual, d.top);
+
+    html += `
+      <div class="cmp-row">
+        <div class="cmp-header">
+          <div class="cmp-name">🏢 Kompetitor</div>
+          <div class="badge badge-warn">Eff ${fmtN(d.effNominal*100,2)}% · Flat ${fmtN(d.flatAnnual*100,2)}%</div>
+        </div>
+        <div class="cmp-values">
+          <div class="cmp-val-item">
+            <div class="cv-lbl">Angsuran Eff</div>
+            <div class="cv-val orange">${fmtRp(d.ang)}</div>
+          </div>
+          <div class="cmp-val-item">
+            <div class="cv-lbl">Angsuran Flat</div>
+            <div class="cv-val orange">${fmtRp(kompFlatPmt)}</div>
+          </div>
+          <div class="cmp-val-item">
+            <div class="cv-lbl">Total Bayar</div>
+            <div class="cv-val">${fmtRp(d.totalAng)}</div>
+          </div>
+        </div>
+      </div>`;
+
+    // ── Row: SPEKTRA Effective ──
+    if (d.spkEff) {
+      const diffEff = d.spkEff.pmt - d.ang;
+      const clsEff  = diffEff <= 0 ? 'green' : 'orange';
+      const ms207info = d.ms207 > 0
+        ? `<div style="font-size:11px;color:var(--txt3);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)">
+             MS207 splitting: <b style="color:var(--txt2)">${fmtRp(d.ms207)}</b> · 
+             Interest Murni: <b style="color:var(--txt2)">${fmtRp(d.spkEff.totalBungaMurni)}</b>
+           </div>` : '';
+      html += `
+        <div class="cmp-row">
+          <div class="cmp-header">
+            <div class="cmp-name">🔵 SPEKTRA — Effective Rate</div>
+            <div class="badge badge-blue">WAR Eff ${fmtN(d.spkEff.warEff*100,2)}%</div>
+          </div>
+          <div class="cmp-values">
+            <div class="cmp-val-item">
+              <div class="cv-lbl">Est. Angsuran</div>
+              <div class="cv-val ${clsEff}">${fmtRp(d.spkEff.pmt)}</div>
+            </div>
+            <div class="cmp-val-item">
+              <div class="cv-lbl">Total Bayar</div>
+              <div class="cv-val">${fmtRp(d.spkEff.totalAng)}</div>
+            </div>
+            <div class="cmp-val-item">
+              <div class="cv-lbl">Selisih vs Komp</div>
+              <div class="cv-val ${clsEff}">${diffEff >= 0 ? '+' : ''}${fmtRp(diffEff)}/bln</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:11px;color:var(--txt3)">WAR Flat (auto konversi)</div>
+            <div style="font-size:12px;font-weight:800;color:var(--brand)">${fmtN(d.spkEff.warFlat*100,2)}% / thn</div>
+          </div>
+          ${ms207info}
+        </div>`;
+    }
+
+    // ── Row: SPEKTRA Flat ──
+    if (d.spkFlat) {
+      const diffFlat     = d.spkFlat.pmt - d.ang;           // selisih vs angsuran eff kompetitor
+      const diffFlatFlat = d.spkFlat.pmt - kompFlatPmt;     // selisih vs angsuran FLAT kompetitor
+      const clsFlat      = diffFlat <= 0 ? 'green' : 'orange';
+      const clsFF        = diffFlatFlat <= 0 ? 'green' : 'orange';
+      html += `
+        <div class="cmp-row">
+          <div class="cmp-header">
+            <div class="cmp-name">🟢 SPEKTRA — Flat Rate</div>
+            <div class="badge badge-green">WAR Flat ${fmtN(d.spkFlat.warFlat*100,2)}% / thn</div>
+          </div>
+          <div class="cmp-values">
+            <div class="cmp-val-item">
+              <div class="cv-lbl">Est. Angsuran</div>
+              <div class="cv-val ${clsFlat}">${fmtRp(d.spkFlat.pmt)}</div>
+            </div>
+            <div class="cmp-val-item">
+              <div class="cv-lbl">Selisih vs Komp Eff</div>
+              <div class="cv-val ${clsFlat}">${diffFlat >= 0 ? '+' : ''}${fmtRp(diffFlat)}/bln</div>
+            </div>
+            <div class="cmp-val-item">
+              <div class="cv-lbl">Selisih vs Komp Flat</div>
+              <div class="cv-val ${clsFF}">${diffFlatFlat >= 0 ? '+' : ''}${fmtRp(diffFlatFlat)}/bln</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    document.getElementById('compare_block').innerHTML = html;
+
+    // ── Verdict ──
+    const vEl = document.getElementById('verdict');
+    vEl.className = 'verdict';
+
+    // Gunakan SPEKTRA Eff sebagai benchmark utama jika ada, fallback ke Flat
+    const benchPmt  = d.spkEff ? d.spkEff.pmt : d.spkFlat.pmt;
+    const benchLabel= d.spkEff ? `WAR Eff ${fmtN(d.spkEff.warEff*100,2)}%` : `Flat ${fmtN(d.spkFlat.warFlat*100,2)}%`;
+    const diff      = benchPmt - d.ang;
+    const diffPct   = Math.abs(diff / d.ang * 100).toFixed(1);
+
+    // Juga tampilkan info selisih flat jika ada
+    let flatInfo = '';
+    if (d.spkFlat) {
+      const df = d.spkFlat.pmt - kompFlatPmt;
+      flatInfo = ` Versi flat rate: SPEKTRA ${fmtRp(d.spkFlat.pmt)}/bln vs kompetitor ${fmtRp(kompFlatPmt)}/bln (selisih <b>${df >= 0 ? '+' : ''}${fmtRp(df)}/bln</b>).`;
+    }
+
+    if (Math.abs(diff) < 1000) {
+      vEl.classList.add('same');
+      vEl.innerHTML = `⚖️ <b>Angsuran sangat kompetitif.</b> Selisih SPEKTRA (${benchLabel}) vs kompetitor kurang dari Rp 1.000/bulan.${flatInfo}`;
+    } else if (diff < 0) {
+      vEl.classList.add('cheaper');
+      vEl.innerHTML = `✅ <b>SPEKTRA lebih murah ~${diffPct}%.</b> Dengan ${benchLabel}, angsuran SPEKTRA <b>${fmtRp(Math.abs(diff))}/bulan lebih rendah</b> dari kompetitor. Gunakan ini sebagai selling point!${flatInfo}`;
+    } else {
+      vEl.classList.add('pricier');
+      vEl.innerHTML = `⚠️ <b>Kompetitor lebih murah ~${diffPct}%.</b> Angsuran kompetitor <b>${fmtRp(Math.abs(diff))}/bulan lebih rendah</b> dari SPEKTRA (${benchLabel}). Rate kompetitor: Eff <b>${fmtN(d.effNominal*100,2)}%</b> · Flat <b>${fmtN(d.flatAnnual*100,2)}%</b> per tahun.${flatInfo}`;
+    }
+  }
+
+  // Amort Table
+  const tbody = document.getElementById('amort_body');
+  tbody.innerHTML = d.amortRows.map(r => `
+    <tr>
+      <td>${r.bln}</td>
+      <td>${fmtN(Math.round(r.bgnBal))}</td>
+      <td><b>${fmtN(Math.round(r.ang))}</b></td>
+      <td style="color:var(--warn)">${fmtN(Math.round(r.bunga))}</td>
+      <td style="color:var(--accent)">${fmtN(Math.round(r.pokok))}</td>
+      <td>${fmtN(Math.max(0, Math.round(r.endBal)))}</td>
+    </tr>
+  `).join('');
+
+  const totAng   = d.amortRows.reduce((s,x) => s + x.ang, 0);
+  const totBunga = d.amortRows.reduce((s,x) => s + x.bunga, 0);
+  const totPokok = d.amortRows.reduce((s,x) => s + x.pokok, 0);
+  document.getElementById('amort_foot').innerHTML = `
+    <tr>
+      <td>TOTAL</td><td>–</td>
+      <td>${fmtN(Math.round(totAng))}</td>
+      <td>${fmtN(Math.round(totBunga))}</td>
+      <td>${fmtN(Math.round(totPokok))}</td>
+      <td>0</td>
+    </tr>`;
+
+  // Scroll to results
+  setTimeout(() => {
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ─────────────────────────────────────────────────────────────
+// COPY & EXPORT
+// ─────────────────────────────────────────────────────────────
+function copyResult() {
+  if (!LAST) return;
+  const d = LAST;
+  let lines = [
+    '=== REVERSE RATE SPEKTRA ===',
+    `Harga Barang  : ${fmtRp(d.otr)}`,
+    `Angsuran      : ${fmtRp(d.ang)} / bulan`,
+    `Tenor         : ${d.top} bulan (${d.isAD ? 'Advance' : 'Arrear'})`,
+    '',
+    `Eff Rate/Thn  : ${fmtN(d.effNominal*100, 4)}%`,
+    `Flat Rate/Thn : ${fmtN(d.flatAnnual*100, 4)}%`,
+    `Total Bunga   : ${fmtRp(d.totalBunga)}`,
+    `Total Bayar   : ${fmtRp(d.totalAng)}`,
+  ];
+  if (d.spkEff) {
+    lines.push('');
+    lines.push(`SPEKTRA (WAR Eff ${fmtN(d.spkEff.warEff*100,2)}%)`);
+    lines.push(`Est. Angsuran : ${fmtRp(d.spkEff.pmt)} / bulan`);
+    lines.push(`Selisih       : ${fmtRp(d.spkEff.pmt - d.ang)} / bulan`);
+  }
+  if (d.spkFlat) {
+    lines.push('');
+    lines.push(`SPEKTRA (Flat ${fmtN(d.spkFlat.warFlat*100,2)}%)`);
+    lines.push(`Est. Angsuran : ${fmtRp(d.spkFlat.pmt)} / bulan`);
+    lines.push(`Selisih       : ${fmtRp(d.spkFlat.pmt - d.ang)} / bulan`);
+  }
+  navigator.clipboard.writeText(lines.join('\n'))
+    .then(() => toast('✅ Berhasil disalin!'))
+    .catch(() => toast('❌ Gagal copy, coba manual'));
+}
+
+function exportCSV() {
+  if (!LAST) return;
+  const d = LAST;
+  const hdr = ['Bulan','Saldo Awal','Angsuran','Bunga','Pokok','Sisa Saldo'];
+  const rows = d.amortRows.map(r => [
+    r.bln,
+    Math.round(r.bgnBal),
+    Math.round(r.ang),
+    Math.round(r.bunga),
+    Math.round(r.pokok),
+    Math.max(0, Math.round(r.endBal)),
+  ]);
+  const sum = [
+    [], ['RINGKASAN'],
+    ['Harga Barang', d.otr],
+    ['Eff Rate/Thn', fmtN(d.effNominal*100,4)+'%'],
+    ['Flat Rate/Thn', fmtN(d.flatAnnual*100,4)+'%'],
+    ['Total Bunga', Math.round(d.totalBunga)],
+    ['Total Kewajiban', Math.round(d.totalAng)],
+  ];
+  if (d.spkEff) {
+    sum.push([]);
+    sum.push([`SPEKTRA WAR Eff ${fmtN(d.spkEff.warEff*100,2)}%`]);
+    sum.push(['Est. Angsuran', Math.round(d.spkEff.pmt)]);
+  }
+  if (d.spkFlat) {
+    sum.push([]);
+    sum.push([`SPEKTRA Flat ${fmtN(d.spkFlat.warFlat*100,2)}%`]);
+    sum.push(['Est. Angsuran', Math.round(d.spkFlat.pmt)]);
+  }
+  const csv = [hdr, ...rows, ...sum].map(r => r.join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'reverse-rate.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📥 CSV didownload!');
+}
+
+function resetAll() {
+  ['f_otr','f_ang','f_admin','f_top','f_war_eff','f_war_flat','f_ms207'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('err'); }
+  });
+  ['e_otr','e_ang','e_top'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+  setType('AR');
+  document.getElementById('results').classList.remove('show');
+  LAST = null;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast('🔄 Form direset');
+}
+</script>
+</body>
+</html>
